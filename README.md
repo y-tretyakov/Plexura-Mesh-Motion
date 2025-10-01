@@ -1,4 +1,4 @@
-# Plexus Mesh Motion
+# Plexura Mesh Motion
 
 ![Plexus Mesh Motion](assets/img/Plexura-Mesh-Motion__0004.png)
 
