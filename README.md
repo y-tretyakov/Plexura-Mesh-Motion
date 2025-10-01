@@ -1,5 +1,7 @@
 # Plexus Mesh Motion
 
+![Plexus Mesh Motion](assets/img/Plexura-Mesh-Motion__0004.png)
+
 An interactive 3D mesh visualization using Three.js and GSAP with physics simulation.
 
 ## Features
