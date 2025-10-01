@@ -1,6 +1,6 @@
 # Plexura Mesh Motion
 
-![Plexus Mesh Motion](assets/img/Plexura-Mesh-Motion__0004.png)
+![Plexus Mesh Motion](assets/img/Plexura-Mesh-Motion__0006.png)
 
 An interactive 3D mesh visualization using Three.js and GSAP with physics simulation.
 
@@ -20,6 +20,8 @@ An interactive 3D mesh visualization using Three.js and GSAP with physics simula
 - Vanilla JavaScript
 
 ## Getting Started
+
+![Plexus Mesh Motion](assets/img/Plexura-Mesh-Motion__0004.png)
 
 Simply open `index.html` in a web browser to run the application.
 
