@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Plexus — Three.js + GSAP (Preimpostazioni • Media di sfondo • Salvataggio automatico • Fisica avanzata) — Stabile v3.1"
+  },
+  "ui": {
+    "controls": "Controlli Plexus",
+    "presets": {
+      "title": "Preimpostazioni",
+      "choose": "Scegli preimpostazione",
+      "apply": "Applica",
+      "saveAsCustom": "Salva corrente come personalizzato",
+      "note": "15 preimpostazioni creative + le tue personalizzate. Il salvataggio automatico è attivo."
+    },
+    "general": {
+      "title": "Generale",
+      "points": "Punti",
+      "maxDistance": "Distanza massima",
+      "spaceDepth": "Profondità spazio (Z)",
+      "reset": "Reimposta generale"
+    },
+    "motion": {
+      "title": "Movimento",
+      "speed": "Velocità 0–15",
+      "jitter": "Instabilità",
+      "reset": "Reimposta movimento"
+    },
+    "physics": {
+      "title": "Fisica avanzata",
+      "damping": "Smorzamento/Inerzia",
+      "mass": "Massa",
+      "maxSpeed": "Velocità massima",
+      "gravity": "Gravità",
+      "impulse": "Impulso (clic)",
+      "magicField": "Campo magico",
+      "giveImpulse": "Dare impulso",
+      "clearVelocities": "Cancella velocità"
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "pointSize": "Dimensione punto",
+      "edgeAlpha": "Alfa bordo min",
+      "nearColor": "Colore vicino",
+      "farColor": "Colore lontano",
+      "glassFaces": "Facce di vetro",
+      "faceThreshold": "Soglia faccia",
+      "faceAlpha": "Alfa faccia",
+      "reset": "Reimposta aspetto"
+    },
+    "interact": {
+      "title": "Interazione",
+      "enableMouse": "Abilita mouse",
+      "mouseMode": "Modalità mouse",
+      "camera": "Telecamera",
+      "physics": "Fisica",
+      "physBehavior": "Comportamento fisico",
+      "repel": "Respingere",
+      "attract": "Attrarre",
+      "radius": "Raggio",
+      "strength": "Forza",
+      "camParallax": "Parallasse telecamera",
+      "reset": "Reimposta interazione",
+      "note": "Spazio — Pausa/Riprendi. Clic sulla scena — impulso."
+    },
+    "background": {
+      "title": "Sfondo",
+      "mode": "Modalità",
+      "color": "Colore",
+      "image": "Immagine",
+      "video": "Video",
+      "url": "URL",
+      "loadUrl": "Carica URL",
+      "pickFile": "Scegli file",
+      "clear": "Pulisci",
+      "videoLoop": "Video: loop",
+      "videoMute": "Video: muto"
+    },
+    "io": {
+      "title": "Importa / Esporta",
+      "export": "Esporta JSON",
+      "import": "Importa JSON",
+      "save": "Salva",
+      "load": "Carica",
+      "autosave": "Salvataggio automatico",
+      "note": "Esporta — scaricherà le impostazioni correnti. Salva/Carica — LocalStorage."
+    },
+    "actions": {
+      "title": "Azioni",
+      "defaults": "Predefiniti",
+      "randomize": "Randomizza",
+      "pause": "Pausa",
+      "resume": "Riprendi"
+    }
+  },
+  "hud": {
+    "snap": "Istantanea",
+    "shuffle": "Mescola",
+    "menu": "☰ Menu"
+  },
+  "badge": "Three.js + GSAP • Plexus"
+}

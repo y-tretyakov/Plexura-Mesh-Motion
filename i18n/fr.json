@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Plexus — Three.js + GSAP (Préréglages • Médias d'arrière-plan • Sauvegarde auto • Physique avancée) — Stable v3.1"
+  },
+  "ui": {
+    "controls": "Contrôles Plexus",
+    "presets": {
+      "title": "Préréglages",
+      "choose": "Choisir un préréglage",
+      "apply": "Appliquer",
+      "saveAsCustom": "Enregistrer l'actuel comme personnalisé",
+      "note": "15 préréglages créatifs + les vôtres personnalisés. La sauvegarde automatique est activée."
+    },
+    "general": {
+      "title": "Général",
+      "points": "Points",
+      "maxDistance": "Distance max",
+      "spaceDepth": "Profondeur de l'espace (Z)",
+      "reset": "Réinitialiser général"
+    },
+    "motion": {
+      "title": "Mouvement",
+      "speed": "Vitesse 0–15",
+      "jitter": "Tremblement",
+      "reset": "Réinitialiser mouvement"
+    },
+    "physics": {
+      "title": "Physique avancée",
+      "damping": "Amortissement/Inertie",
+      "mass": "Masse",
+      "maxSpeed": "Vitesse max",
+      "gravity": "Gravité",
+      "impulse": "Impulsion (clic)",
+      "magicField": "Champ magique",
+      "giveImpulse": "Donner une impulsion",
+      "clearVelocities": "Effacer les vitesses"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "pointSize": "Taille des points",
+      "edgeAlpha": "Alpha min des arêtes",
+      "nearColor": "Couleur proche",
+      "farColor": "Couleur éloignée",
+      "glassFaces": "Faces en verre",
+      "faceThreshold": "Seuil des faces",
+      "faceAlpha": "Alpha des faces",
+      "reset": "Réinitialiser apparence"
+    },
+    "interact": {
+      "title": "Interaction",
+      "enableMouse": "Activer la souris",
+      "mouseMode": "Mode souris",
+      "camera": "Caméra",
+      "physics": "Physique",
+      "physBehavior": "Comportement physique",
+      "repel": "Repousser",
+      "attract": "Attirer",
+      "radius": "Rayon",
+      "strength": "Force",
+      "camParallax": "Parallaxe caméra",
+      "reset": "Réinitialiser interaction",
+      "note": "Espace — Pause/Reprendre. Clic sur la scène — impulsion."
+    },
+    "background": {
+      "title": "Arrière-plan",
+      "mode": "Mode",
+      "color": "Couleur",
+      "image": "Image",
+      "video": "Vidéo",
+      "url": "URL",
+      "loadUrl": "Charger URL",
+      "pickFile": "Choisir un fichier",
+      "clear": "Effacer",
+      "videoLoop": "Vidéo : boucle",
+      "videoMute": "Vidéo : muet"
+    },
+    "io": {
+      "title": "Importer / Exporter",
+      "export": "Exporter JSON",
+      "import": "Importer JSON",
+      "save": "Enregistrer",
+      "load": "Charger",
+      "autosave": "Sauvegarde automatique",
+      "note": "Exporter — téléchargera les paramètres actuels. Enregistrer/Charger — LocalStorage."
+    },
+    "actions": {
+      "title": "Actions",
+      "defaults": "Par défaut",
+      "randomize": "Aléatoire",
+      "pause": "Pause",
+      "resume": "Reprendre"
+    }
+  },
+  "hud": {
+    "snap": "Capture",
+    "shuffle": "Mélanger",
+    "menu": "☰ Menu"
+  },
+  "badge": "Three.js + GSAP • Plexus"
+}

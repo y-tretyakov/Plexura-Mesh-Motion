@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Plexus — Three.js + GSAP (Preajustes • Medios de fondo • Guardado automático • Física avanzada) — Estable v3.1"
+  },
+  "ui": {
+    "controls": "Controles de Plexus",
+    "presets": {
+      "title": "Preajustes",
+      "choose": "Elegir preajuste",
+      "apply": "Aplicar",
+      "saveAsCustom": "Guardar actual como personalizado",
+      "note": "15 preajustes creativos + los tuyos personalizados. El guardado automático está activado."
+    },
+    "general": {
+      "title": "General",
+      "points": "Puntos",
+      "maxDistance": "Distancia máxima",
+      "spaceDepth": "Profundidad del espacio (Z)",
+      "reset": "Restablecer general"
+    },
+    "motion": {
+      "title": "Movimiento",
+      "speed": "Velocidad 0–15",
+      "jitter": "Temblor",
+      "reset": "Restablecer movimiento"
+    },
+    "physics": {
+      "title": "Física avanzada",
+      "damping": "Amortiguamiento/Inercia",
+      "mass": "Masa",
+      "maxSpeed": "Velocidad máxima",
+      "gravity": "Gravedad",
+      "impulse": "Impulso (clic)",
+      "magicField": "Campo mágico",
+      "giveImpulse": "Dar impulso",
+      "clearVelocities": "Limpiar velocidades"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "pointSize": "Tamaño de punto",
+      "edgeAlpha": "Alfa de borde mín",
+      "nearColor": "Color cercano",
+      "farColor": "Color lejano",
+      "glassFaces": "Caras de vidrio",
+      "faceThreshold": "Umbral de cara",
+      "faceAlpha": "Alfa de cara",
+      "reset": "Restablecer apariencia"
+    },
+    "interact": {
+      "title": "Interacción",
+      "enableMouse": "Habilitar ratón",
+      "mouseMode": "Modo de ratón",
+      "camera": "Cámara",
+      "physics": "Física",
+      "physBehavior": "Comportamiento físico",
+      "repel": "Repeler",
+      "attract": "Atraer",
+      "radius": "Radio",
+      "strength": "Fuerza",
+      "camParallax": "Paralaje de cámara",
+      "reset": "Restablecer interacción",
+      "note": "Espacio — Pausa/Reanudar. Clic en escena — impulso."
+    },
+    "background": {
+      "title": "Fondo",
+      "mode": "Modo",
+      "color": "Color",
+      "image": "Imagen",
+      "video": "Video",
+      "url": "URL",
+      "loadUrl": "Cargar URL",
+      "pickFile": "Seleccionar archivo",
+      "clear": "Limpiar",
+      "videoLoop": "Video: bucle",
+      "videoMute": "Video: silenciar"
+    },
+    "io": {
+      "title": "Importar / Exportar",
+      "export": "Exportar JSON",
+      "import": "Importar JSON",
+      "save": "Guardar",
+      "load": "Cargar",
+      "autosave": "Guardado automático",
+      "note": "Exportar — descargará la configuración actual. Guardar/Cargar — LocalStorage."
+    },
+    "actions": {
+      "title": "Acciones",
+      "defaults": "Predeterminados",
+      "randomize": "Aleatorizar",
+      "pause": "Pausa",
+      "resume": "Reanudar"
+    }
+  },
+  "hud": {
+    "snap": "Captura",
+    "shuffle": "Mezclar",
+    "menu": "☰ Menú"
+  },
+  "badge": "Three.js + GSAP • Plexus"
+}

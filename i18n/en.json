@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Plexus — Three.js + GSAP (Presets • BG Media • Autosave • Advanced Physics) — Stable v3.1 [EN]"
+  },
+  "ui": {
+    "controls": "Plexus Controls",
+    "presets": {
+      "title": "Presets",
+      "choose": "Choose preset",
+      "apply": "Apply",
+      "saveAsCustom": "Save current as Custom",
+      "note": "15 creative presets + your custom ones. Autosave is on."
+    },
+    "general": {
+      "title": "General",
+      "points": "Points",
+      "maxDistance": "Max distance",
+      "spaceDepth": "Space depth (Z)",
+      "reset": "Reset General"
+    },
+    "motion": {
+      "title": "Motion",
+      "speed": "Speed 0–15",
+      "jitter": "Jitter",
+      "reset": "Reset Motion"
+    },
+    "physics": {
+      "title": "Advanced Physics",
+      "damping": "Damping/Inertia",
+      "mass": "Mass",
+      "maxSpeed": "Max speed",
+      "gravity": "Gravity",
+      "impulse": "Impulse (click)",
+      "magicField": "Magic field",
+      "giveImpulse": "Give impulse",
+      "clearVelocities": "Clear velocities"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "pointSize": "Point size",
+      "edgeAlpha": "Edge alpha min",
+      "nearColor": "Near color",
+      "farColor": "Far color",
+      "glassFaces": "Glass faces",
+      "faceThreshold": "Face threshold",
+      "faceAlpha": "Face alpha",
+      "reset": "Reset Appearance"
+    },
+    "interact": {
+      "title": "Interaction",
+      "enableMouse": "Enable mouse",
+      "mouseMode": "Mouse mode",
+      "camera": "Camera",
+      "physics": "Physics",
+      "physBehavior": "Physics behavior",
+      "repel": "Repel",
+      "attract": "Attract",
+      "radius": "Radius",
+      "strength": "Strength",
+      "camParallax": "Camera parallax",
+      "reset": "Reset Interaction",
+      "note": "Space — Pause/Resume. Click on scene — impulse."
+    },
+    "background": {
+      "title": "Background",
+      "mode": "Mode",
+      "color": "Color",
+      "image": "Image",
+      "video": "Video",
+      "url": "URL",
+      "loadUrl": "Load URL",
+      "pickFile": "Pick file",
+      "clear": "Clear",
+      "videoLoop": "Video: loop",
+      "videoMute": "Video: mute"
+    },
+    "io": {
+      "title": "Import / Export",
+      "export": "Export JSON",
+      "import": "Import JSON",
+      "save": "Save",
+      "load": "Load",
+      "autosave": "Autosave",
+      "note": "Export — download current settings. Save/Load — LocalStorage."
+    },
+    "actions": {
+      "title": "Actions",
+      "defaults": "Defaults",
+      "randomize": "Randomize",
+      "pause": "Pause",
+      "resume": "Resume"
+    }
+  },
+  "hud": {
+    "snap": "Snap",
+    "shuffle": "Shuffle",
+    "menu": "☰ Menu"
+  },
+  "badge": "Three.js + GSAP • Plexus"
+}

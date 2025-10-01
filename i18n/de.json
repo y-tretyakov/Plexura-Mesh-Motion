@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Plexus — Three.js + GSAP (Voreinstellungen • Hintergrundmedien • Automatisches Speichern • Erweiterte Physik) — Stabil v3.1"
+  },
+  "ui": {
+    "controls": "Plexus Steuerung",
+    "presets": {
+      "title": "Voreinstellungen",
+      "choose": "Voreinstellung wählen",
+      "apply": "Anwenden",
+      "saveAsCustom": "Aktuelle als benutzerdefiniert speichern",
+      "note": "15 kreative Voreinstellungen + Ihre benutzerdefinierten. Automatisches Speichern ist aktiviert."
+    },
+    "general": {
+      "title": "Allgemein",
+      "points": "Punkte",
+      "maxDistance": "Max. Entfernung",
+      "spaceDepth": "Raumtiefe (Z)",
+      "reset": "Allgemein zurücksetzen"
+    },
+    "motion": {
+      "title": "Bewegung",
+      "speed": "Geschwindigkeit 0–15",
+      "jitter": "Zittern",
+      "reset": "Bewegung zurücksetzen"
+    },
+    "physics": {
+      "title": "Erweiterte Physik",
+      "damping": "Dämpfung/Trägheit",
+      "mass": "Masse",
+      "maxSpeed": "Max. Geschwindigkeit",
+      "gravity": "Schwerkraft",
+      "impulse": "Impuls (Klick)",
+      "magicField": "Magisches Feld",
+      "giveImpulse": "Impuls geben",
+      "clearVelocities": "Geschwindigkeiten löschen"
+    },
+    "appearance": {
+      "title": "Erscheinungsbild",
+      "pointSize": "Punktgröße",
+      "edgeAlpha": "Kanten Alpha min",
+      "nearColor": "Nahe Farbe",
+      "farColor": "Entfernte Farbe",
+      "glassFaces": "Glasflächen",
+      "faceThreshold": "Flächenschwelle",
+      "faceAlpha": "Flächen Alpha",
+      "reset": "Erscheinungsbild zurücksetzen"
+    },
+    "interact": {
+      "title": "Interaktion",
+      "enableMouse": "Maus aktivieren",
+      "mouseMode": "Mausmodus",
+      "camera": "Kamera",
+      "physics": "Physik",
+      "physBehavior": "Physikverhalten",
+      "repel": "Abstoßen",
+      "attract": "Anziehen",
+      "radius": "Radius",
+      "strength": "Stärke",
+      "camParallax": "Kamera-Parallax",
+      "reset": "Interaktion zurücksetzen",
+      "note": "Leertaste — Pause/Fortsetzen. Klick auf Szene — Impuls."
+    },
+    "background": {
+      "title": "Hintergrund",
+      "mode": "Modus",
+      "color": "Farbe",
+      "image": "Bild",
+      "video": "Video",
+      "url": "URL",
+      "loadUrl": "URL laden",
+      "pickFile": "Datei auswählen",
+      "clear": "Löschen",
+      "videoLoop": "Video: Schleife",
+      "videoMute": "Video: stumm"
+    },
+    "io": {
+      "title": "Import / Export",
+      "export": "JSON exportieren",
+      "import": "JSON importieren",
+      "save": "Speichern",
+      "load": "Laden",
+      "autosave": "Automatisches Speichern",
+      "note": "Export — lädt aktuelle Einstellungen herunter. Speichern/Laden — LocalStorage."
+    },
+    "actions": {
+      "title": "Aktionen",
+      "defaults": "Standardwerte",
+      "randomize": "Zufällig",
+      "pause": "Pause",
+      "resume": "Fortsetzen"
+    }
+  },
+  "hud": {
+    "snap": "Schnappschuss",
+    "shuffle": "Mischen",
+    "menu": "☰ Menü"
+  },
+  "badge": "Three.js + GSAP • Plexus"
+}

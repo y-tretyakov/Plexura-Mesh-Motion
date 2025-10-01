@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="meta.title">Plexus — Three.js + GSAP (Presets • BG Media • Autosave • Advanced Physics) — Stable v3.1</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#121821; --panel-2:#0f141b; --text:#d8e2f1; --muted:#8aa0b6; --shadow:0 8px 28px rgba(0,0,0,.35);
+      --chip:#0f1520; --chip-b:#1a2330;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--text); font:14px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Inter,Arial}
+    .app{display:grid; grid-template-columns: 380px 1fr; gap:0; height:100%}
+    @media (max-width: 1100px){ .app{grid-template-columns:1fr} aside{position:fixed; inset:0 auto 0 0; width:340px; transform:translateX(-102%); transition:transform .25s ease; z-index:50; box-shadow:var(--shadow)} aside.open{transform:translateX(0)} .burger{position:fixed; left:16px; top:16px; z-index:60} }
+    aside{background:linear-gradient(180deg,var(--panel),var(--panel-2)); border-right:1px solid rgba(255,255,255,.06); padding:18px; overflow:auto}
+    aside h2{margin:0 0 12px; font-size:18px; letter-spacing:.4px}
+    .section{margin:14px 0 16px; padding:12px; background:#0e141c; border:1px solid rgba(255,255,255,.06); border-radius:14px}
+    .section h3{margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
+    .row{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; padding:6px 0}
+    .row label{font-size:13px; color:#b8c7db}
+    .row input[type="range"]{width:180px}
+    .row input[type="color"], .row select, .row input[type="url"]{width:170px}
+    .btns{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{cursor:pointer; border:1px solid rgba(255,255,255,.12); background:var(--chip); color:var(--text); padding:10px 12px; border-radius:12px; transition:transform .08s ease, background .2s ease, border-color .2s ease}
+    .btn:hover{background:var(--chip-b)}.btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(180deg,#1b66ff,#184bd6); border-color:rgba(0,0,0,.25)}
+    .btn.ok{background:linear-gradient(180deg,#30c77e,#2ea768)}
+    .btn.warn{background:linear-gradient(180deg,#ffd36a,#ffbd38); color:#0b0d10}
+    .tiny{font-size:12px; color:var(--muted); margin-top:8px}
+    .chips{display:flex; flex-wrap:wrap; gap:6px}
+    .chip{padding:6px 10px; border-radius:999px; background:#121a25; border:1px solid rgba(255,255,255,.08); cursor:pointer; font-size:12px}
+
+    .stage{position:relative; height:100%; overflow:hidden}
+    .bg-layer{position:absolute; inset:0; z-index:0; background-position:center; background-size:cover; background-repeat:no-repeat}
+    .bg-layer video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+    canvas{position:relative; z-index:1; display:block; width:100%; height:100%}
+
+    .hud{position:absolute; right:16px; top:16px; display:flex; gap:8px; z-index:20}
+    .badge{position:absolute; left:16px; bottom:16px; font-size:12px; color:#91a4bd; background:rgba(15,20,30,.6); padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.08); backdrop-filter: blur(6px); z-index:20}
+    .burger{background:rgba(18,24,33,.8); border:1px solid rgba(255,255,255,.1); color:var(--text); padding:10px 12px; border-radius:12px; z-index:30}
+    input[type="file"]{display:none}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside id="sidebar">
+      <h2 data-i18n="ui.controls">Plexus Controls</h2>
+
+      <div class="section" data-section="presets">
+        <h3 data-i18n="ui.presets.title">Presets</h3>
+        <div class="row">
+          <label data-i18n="ui.presets.choose">Choose preset</label>
+          <select id="presetSelect"></select>
+        </div>
+        <div class="btns">
+          <button class="btn primary" id="applyPreset" data-i18n="ui.presets.apply">Apply</button>
+          <button class="btn" id="saveAsCustom" data-i18n="ui.presets.saveAsCustom">Save current as Custom</button>
+        </div>
+        <div class="tiny" data-i18n="ui.presets.note">15 креативных пресетов + ваши кастомные. Автосейв включён.</div>
+      </div>
+
+      <div class="section" data-section="general">
+        <h3 data-i18n="ui.general.title">General</h3>
+        <div class="row"><label data-i18n="ui.general.points">Points <span id="pointsOut"></span></label><input type="range" id="points" min="20" max="600" step="1" /></div>
+        <div class="row"><label data-i18n="ui.general.maxDistance">Max distance <span id="distOut"></span></label><input type="range" id="maxDist" min="30" max="360" step="1" /></div>
+        <div class="row"><label data-i18n="ui.general.spaceDepth">Space depth (Z) <span id="depthOut"></span></label><input type="range" id="depth" min="0" max="1200" step="10" /></div>
+        <div class="btns"><button class="btn" data-reset="general" data-i18n="ui.general.reset">Reset General</button></div>
+      </div>
+
+      </div>
+
+      <div class="section" data-section="motion">
+        <h3 data-i18n="ui.motion.title">Motion</h3>
+        <div class="row"><label data-i18n="ui.motion.speed">Speed 0–15 <span id="speedOut"></span></label><input type="range" id="speed" min="0" max="15" step="1" /></div>
+        <div class="row"><label data-i18n="ui.motion.jitter">Jitter <span id="jitterOut"></span></label><input type="range" id="jitter" min="0" max="200" step="1" /></div>
+        <div class="btns"><button class="btn" data-reset="motion" data-i18n="ui.motion.reset">Reset Motion</button></div>
+      </div>
+
+      <div class="section" data-section="physics">
+        <h3 data-i18n="ui.physics.title">Advanced Physics</h3>
+        <div class="row"><label data-i18n="ui.physics.damping">Damping/Inertia <span id="dampOut"></span></label><input type="range" id="damping" min="90" max="999" step="1" /></div>
+        <div class="row"><label data-i18n="ui.physics.mass">Mass <span id="massOut"></span></label><input type="range" id="mass" min="10" max="300" step="1" /></div>
+        <div class="row"><label data-i18n="ui.physics.maxSpeed">Max speed <span id="vmaxOut"></span></label><input type="range" id="vmax" min="20" max="400" step="5" /></div>
+        <div class="row"><label data-i18n="ui.physics.gravity">Gravity <span id="gravOut"></span></label><input type="range" id="gravity" min="-200" max="200" step="5" /></div>
+        <div class="row"><label data-i18n="ui.physics.impulse">Impulse (click) <span id="impOut"></span></label><input type="range" id="impulse" min="0" max="400" step="5" /></div>
+        <div class="row"><label data-i18n="ui.physics.magicField">Magic field <span id="magicOut"></span></label><input type="range" id="magic" min="0" max="100" step="1" /></div>
+        <div class="btns chips">
+          <span class="chip" id="impulseNow" data-i18n="ui.physics.giveImpulse">Give impulse</span>
+          <span class="chip" id="clearVel" data-i18n="ui.physics.clearVelocities">Clear velocities</span>
+        </div>
+      </div>
+          <span class="chip" id="clearVel">Clear velocities</span>
+        </div>
+      </div>
+
+      <div class="section" data-section="appearance">
+        <h3 data-i18n="ui.appearance.title">Appearance</h3>
+        <div class="row"><label data-i18n="ui.appearance.pointSize">Point size <span id="sizeOut"></span></label><input type="range" id="pointSize" min="1" max="8" step="1" /></div>
+        <div class="row"><label data-i18n="ui.appearance.edgeAlpha">Edge alpha min <span id="alphaOut"></span></label><input type="range" id="edgeAlpha" min="0" max="100" step="1" /></div>
+        <div class="row"><label data-i18n="ui.appearance.nearColor">Near color</label><input type="color" id="nearColor" /></div>
+        <div class="row"><label data-i18n="ui.appearance.farColor">Far color</label><input type="color" id="farColor" /></div>
+        <div class="row"><label data-i18n="ui.appearance.glassFaces">Glass faces</label><input type="checkbox" id="glassOn" /></div>
+        <div class="row"><label data-i18n="ui.appearance.faceThreshold">Face threshold <span id="faceThreshOut"></span></label><input type="range" id="faceThreshold" min="40" max="260" step="1" /></div>
+        <div class="row"><label data-i18n="ui.appearance.faceAlpha">Face alpha <span id="faceAlphaOut"></span></label><input type="range" id="faceAlpha" min="0" max="60" step="1" /></div>
+        <div class="btns"><button class="btn" data-reset="appearance" data-i18n="ui.appearance.reset">Reset Appearance</button></div>
+      </div>
+
+      <div class="section" data-section="interact">
+        <h3 data-i18n="ui.interact.title">Interaction</h3>
+        <div class="row"><label data-i18n="ui.interact.enableMouse">Enable mouse</label><input type="checkbox" id="ixEnabled" /></div>
+        <div class="row"><label data-i18n="ui.interact.mouseMode">Mouse mode</label>
+          <select id="ixMouseMode"><option value="camera" data-i18n="ui.interact.camera">Camera</option><option value="physics" data-i18n="ui.interact.physics">Physics</option></select>
+        </div>
+        <div class="row"><label data-i18n="ui.interact.physBehavior">Physics behavior</label>
+          <select id="ixPhysMode"><option value="repel" data-i18n="ui.interact.repel">Repel</option><option value="attract" data-i18n="ui.interact.attract">Attract</option></select>
+        </div>
+        <div class="row"><label data-i18n="ui.interact.radius">Radius <span id="ixRadOut"></span></label><input type="range" id="ixRadius" min="40" max="360" step="1" /></div>
+        <div class="row"><label data-i18n="ui.interact.strength">Strength <span id="ixStrOut"></span></label><input type="range" id="ixStrength" min="0" max="300" step="1" /></div>
+        <div class="row"><label data-i18n="ui.interact.camParallax">Camera parallax <span id="ixParOut"></span></label><input type="range" id="ixParallax" min="0" max="100" step="1" /></div>
+        <div class="btns"><button class="btn" data-reset="interact" data-i18n="ui.interact.reset">Reset Interaction</button></div>
+        <div class="tiny" data-i18n="ui.interact.note">Space — Pause/Resume. Click по сцене — импульс.</div>
+      </div>
+
+        <div class="row"><label>Strength <span id="ixStrOut"></span></label><input type="range" id="ixStrength" min="0" max="300" step="1" /></div>
+        <div class="row"><label>Camera parallax <span id="ixParOut"></span></label><input type="range" id="ixParallax" min="0" max="100" step="1" /></div>
+        <div class="btns"><button class="btn" data-reset="interact">Reset Interaction</button></div>
+        <div class="tiny">Space — Pause/Resume. Click по сцене — импульс.</div>
+      </div>
+
+      <div class="section" data-section="bg">
+        <h3 data-i18n="ui.background.title">Background</h3>
+        <div class="row"><label data-i18n="ui.background.mode">Mode</label>
+          <select id="bgMode">
+            <option value="color" data-i18n="ui.background.color">Color</option>
+            <option value="image" data-i18n="ui.background.image">Image</option>
+            <option value="video" data-i18n="ui.background.video">Video</option>
+          </select>
+        </div>
+        <div class="row"><label data-i18n="ui.background.color">Color</label><input type="color" id="bgColor" /></div>
+        <div class="row"><label data-i18n="ui.background.url">URL</label><input type="url" id="bgUrl" placeholder="https://..." /></div>
+        <div class="btns"><button class="btn" id="bgLoadUrl" data-i18n="ui.background.loadUrl">Load URL</button><button class="btn" id="bgPickFile" data-i18n="ui.background.pickFile">Pick file</button><button class="btn" id="bgClear" data-i18n="ui.background.clear">Clear</button></div>
+        <input type="file" id="bgFile" accept="image/*,video/*" />
+        <div class="row"><label data-i18n="ui.background.videoLoop">Video: loop</label><input type="checkbox" id="bgLoop" /></div>
+        <div class="row"><label data-i18n="ui.background.videoMute">Video: mute</label><input type="checkbox" id="bgMute" /></div>
+      </div>
+
+      <div class="section" data-section="io">
+        <h3 data-i18n="ui.io.title">Import / Export</h3>
+        <div class="btns">
+          <button class="btn" id="exportJSON" data-i18n="ui.io.export">Export JSON</button>
+          <button class="btn" id="importJSON" data-i18n="ui.io.import">Import JSON</button>
+          <button class="btn" id="saveJSON" data-i18n="ui.io.save">Save</button>
+          <button class="btn" id="loadJSON" data-i18n="ui.io.load">Load</button>
+        </div>
+        <input type="file" id="fileInput" accept="application/json" />
+        <div class="row"><label data-i18n="ui.io.autosave">Autosave</label><input type="checkbox" id="autoSave" /></div>
+        <div class="tiny" data-i18n="ui.io.note">Export — скачает текущие настройки. Save/Load — LocalStorage.</div>
+      </div>
+
+      <div class="section">
+        <h3 data-i18n="ui.actions.title">Actions</h3>
+        <div class="btns">
+          <button class="btn primary" id="defaults" data-i18n="ui.actions.defaults">Defaults</button>
+          <button class="btn ok" id="randomize" data-i18n="ui.actions.randomize">Randomize</button>
+          <button class="btn warn" id="pauseBtn" data-i18n="ui.actions.pause">Pause</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="stage" id="stage">
+      <div class="bg-layer" id="bgLayer"></div>
+      <button class="burger" id="burger" aria-label="Toggle menu" data-i18n="hud.menu" data-i18n-attr="aria-label">☰ Menu</button>
+      <div class="hud"><button class="btn" id="snap" data-i18n="hud.snap">Snap</button><button class="btn" id="shuffle" data-i18n="hud.shuffle">Shuffle</button></div>
+      <div class="badge" data-i18n="badge">Three.js + GSAP • Plexus</div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="i18n/i18n.js"></script>
+
+  <script>
+  // Всё запускаем строго после DOMContentLoaded — иначе будут null-ссылки
+  window.addEventListener('DOMContentLoaded', () => {
+    // ===== Defaults / Schema =====
+    const DEFAULTS = {
+      general:  { points: 180, maxDist: 150, depth: 500 },
+      motion:   { speed: 7, jitter: 10 }, // 0..15, 15 — максимальная скорость
+      physics:  { damping: 0.995, mass: 1.0, vmax: 220, gravity: 0, impulse: 160, magic: 20 },
+      appearance: { pointSize: 3, edgeAlpha: 25, nearColor: '#33e0ff', farColor: '#ff4da6', glassOn: true, faceThreshold: 100, faceAlpha: 14 },
+      interact: { enabled: true, mouseMode: 'camera', physMode: 'repel', radius: 160, strength: 70, parallax: 10, camLerp: 0.12 },
+      background: { mode: 'color', color: '#0b0f14', url: '', loop: true, mute: true },
+      misc: { autoSave: true, preset: 'Default' }
+    };
+    const STORAGE_KEY = 'plexus.settings.v3';
+    const CUSTOM_PRESETS_KEY = 'plexus.custom_presets.v1';
+
+    // --- 15 creative presets ---
+    const PRESETS = [
+      {name:'Neon Web', general:{points:160,maxDist:140,depth:420}, motion:{speed:8,jitter:12}, physics:{damping:0.994,mass:1,vmax:240,gravity:0,impulse:180,magic:35}, appearance:{pointSize:3,edgeAlpha:28,nearColor:'#00f0ff',farColor:'#ff00a8',glassOn:true,faceThreshold:90,faceAlpha:18}, interact:{radius:150,strength:80,parallax:12}, background:{mode:'color',color:'#0a0d12'}},
+      {name:'Glass Nebula', general:{points:220,maxDist:160,depth:700}, motion:{speed:6,jitter:8}, physics:{damping:0.996,mass:1.2,vmax:180,gravity:-10,impulse:120,magic:15}, appearance:{pointSize:3,edgeAlpha:20,nearColor:'#9ae6ff',farColor:'#cfa8ff',glassOn:true,faceThreshold:110,faceAlpha:22}, interact:{radius:170,strength:60,parallax:8}, background:{mode:'color',color:'#05070a'}},
+      {name:'Cyber Grid', general:{points:260,maxDist:120,depth:380}, motion:{speed:10,jitter:6}, physics:{damping:0.993,mass:0.9,vmax:260,gravity:0,impulse:200,magic:10}, appearance:{pointSize:2,edgeAlpha:35,nearColor:'#00ffc3',farColor:'#00b0ff',glassOn:false,faceThreshold:80,faceAlpha:10}, interact:{radius:140,strength:90,parallax:14}, background:{mode:'color',color:'#0b0f14'}},
+      {name:'Aurora Lace', general:{points:200,maxDist:180,depth:600}, motion:{speed:5,jitter:14}, physics:{damping:0.997,mass:1.1,vmax:160,gravity:6,impulse:140,magic:40}, appearance:{pointSize:3,edgeAlpha:22,nearColor:'#6ee7b7',farColor:'#60a5fa',glassOn:true,faceThreshold:120,faceAlpha:20}, interact:{radius:180,strength:50,parallax:6}, background:{mode:'color',color:'#06121b'}},
+      {name:'Deep Space', general:{points:300,maxDist:100,depth:900}, motion:{speed:4,jitter:4}, physics:{damping:0.998,mass:1.4,vmax:140,gravity:-4,impulse:110,magic:12}, appearance:{pointSize:2,edgeAlpha:18,nearColor:'#9aa7ff',farColor:'#6ef1ff',glassOn:false,faceThreshold:90,faceAlpha:12}, interact:{radius:160,strength:40,parallax:5}, background:{mode:'color',color:'#05060a'}},
+      {name:'Magma Wire', general:{points:180,maxDist:150,depth:450}, motion:{speed:11,jitter:16}, physics:{damping:0.992,mass:0.8,vmax:300,gravity:0,impulse:220,magic:18}, appearance:{pointSize:3,edgeAlpha:30,nearColor:'#ff7a18',farColor:'#ffd400',glassOn:true,faceThreshold:100,faceAlpha:14}, interact:{radius:140,strength:85,parallax:10}, background:{mode:'color',color:'#140b0b'}},
+      {name:'Ocean Veil', general:{points:220,maxDist:160,depth:620}, motion:{speed:7,jitter:9}, physics:{damping:0.996,mass:1.3,vmax:200,gravity:3,impulse:130,magic:25}, appearance:{pointSize:3,edgeAlpha:24,nearColor:'#2dd4bf',farColor:'#38bdf8',glassOn:true,faceThreshold:120,faceAlpha:18}, interact:{radius:180,strength:55,parallax:8}, background:{mode:'color',color:'#07151a'}},
+      {name:'Mono Tech', general:{points:160,maxDist:130,depth:380}, motion:{speed:6,jitter:6}, physics:{damping:0.995,mass:1.0,vmax:200,gravity:0,impulse:150,magic:0}, appearance:{pointSize:2,edgeAlpha:30,nearColor:'#ffffff',farColor:'#a7b0ba',glassOn:false,faceThreshold:100,faceAlpha:10}, interact:{radius:150,strength:60,parallax:9}, background:{mode:'color',color:'#0d0f12'}},
+      {name:'Retro Vapor', general:{points:190,maxDist:150,depth:500}, motion:{speed:9,jitter:12}, physics:{damping:0.994,mass:0.9,vmax:260,gravity:0,impulse:190,magic:22}, appearance:{pointSize:3,edgeAlpha:26,nearColor:'#ff71ce',farColor:'#01cdfe',glassOn:true,faceThreshold:95,faceAlpha:17}, interact:{radius:150,strength:75,parallax:12}, background:{mode:'color',color:'#120a1a'}},
+      {name:'Frost Net', general:{points:240,maxDist:140,depth:640}, motion:{speed:5,jitter:8}, physics:{damping:0.997,mass:1.2,vmax:180,gravity:-6,impulse:120,magic:14}, appearance:{pointSize:2,edgeAlpha:20,nearColor:'#bfe9ff',farColor:'#7cc0ff',glassOn:true,faceThreshold:130,faceAlpha:18}, interact:{radius:190,strength:50,parallax:7}, background:{mode:'color',color:'#071018'}},
+      {name:'Jungle Mesh', general:{points:210,maxDist:170,depth:520}, motion:{speed:7,jitter:11}, physics:{damping:0.996,mass:1.1,vmax:200,gravity:2,impulse:150,magic:28}, appearance:{pointSize:3,edgeAlpha:24,nearColor:'#22c55e',farColor:'#84cc16',glassOn:true,faceThreshold:110,faceAlpha:16}, interact:{radius:170,strength:65,parallax:9}, background:{mode:'color',color:'#0b130c'}},
+      {name:'Starlit Glass', general:{points:260,maxDist:150,depth:780}, motion:{speed:6,jitter:10}, physics:{damping:0.997,mass:1.3,vmax:180,gravity:-2,impulse:130,magic:30}, appearance:{pointSize:3,edgeAlpha:22,nearColor:'#e5e7eb',farColor:'#60a5fa',glassOn:true,faceThreshold:140,faceAlpha:20}, interact:{radius:180,strength:60,parallax:6}, background:{mode:'color',color:'#070a12'}},
+      {name:'Crimson Lattice', general:{points:200,maxDist:120,depth:420}, motion:{speed:12,jitter:15}, physics:{damping:0.992,mass:0.85,vmax:320,gravity:0,impulse:240,magic:12}, appearance:{pointSize:2,edgeAlpha:34,nearColor:'#ff3b3b',farColor:'#ffb199',glassOn:false,faceThreshold:100,faceAlpha:12}, interact:{radius:140,strength:95,parallax:12}, background:{mode:'color',color:'#1a0b0b'}},
+      {name:'Noir Silk', general:{points:150,maxDist:170,depth:360}, motion:{speed:4,jitter:6}, physics:{damping:0.998,mass:1.5,vmax:140,gravity:0,impulse:100,magic:6}, appearance:{pointSize:3,edgeAlpha:16,nearColor:'#e5e7eb',farColor:'#9ca3af',glassOn:true,faceThreshold:120,faceAlpha:14}, interact:{radius:190,strength:40,parallax:5}, background:{mode:'color',color:'#0b0b0d'}},
+      {name:'Solar Lines', general:{points:230,maxDist:150,depth:680}, motion:{speed:9,jitter:9}, physics:{damping:0.995,mass:1.0,vmax:240,gravity:3,impulse:180,magic:18}, appearance:{pointSize:3,edgeAlpha:28,nearColor:'#ffd166',farColor:'#ff6b6b',glassOn:true,faceThreshold:110,faceAlpha:18}, interact:{radius:170,strength:70,parallax:9}, background:{mode:'color',color:'#130f08'}},
+      {name:'Quantum Mist', general:{points:280,maxDist:160,depth:900}, motion:{speed:5,jitter:12}, physics:{damping:0.997,mass:1.2,vmax:180,gravity:-3,impulse:150,magic:45}, appearance:{pointSize:2,edgeAlpha:20,nearColor:'#8b5cf6',farColor:'#22d3ee',glassOn:true,faceThreshold:150,faceAlpha:22}, interact:{radius:200,strength:55,parallax:7}, background:{mode:'color',color:'#0a0812'}}
+    ];
+
+    // ===== State & DOM =====
+    const state = deepClone(DEFAULTS);
+    const $ = s => document.querySelector(s);
+    const stage = $('#stage');
+    const sidebar = $('#sidebar');
+    const bgLayer = $('#bgLayer');
+
+    const ui = {
+      // presets
+      presetSelect: $('#presetSelect'), applyPreset: $('#applyPreset'), saveAsCustom: $('#saveAsCustom'),
+      // general
+      points: $('#points'), maxDist: $('#maxDist'), depth: $('#depth'),
+      // motion
+      speed: $('#speed'), jitter: $('#jitter'),
+      // physics
+      damping: $('#damping'), mass: $('#mass'), vmax: $('#vmax'), gravity: $('#gravity'), impulse: $('#impulse'), magic: $('#magic'),
+      // appearance
+      pointSize: $('#pointSize'), edgeAlpha: $('#edgeAlpha'), nearColor: $('#nearColor'), farColor: $('#farColor'), glassOn: $('#glassOn'), faceThreshold: $('#faceThreshold'), faceAlpha: $('#faceAlpha'),
+      // interact
+      ixEnabled: $('#ixEnabled'), ixMouseMode: $('#ixMouseMode'), ixPhysMode: $('#ixPhysMode'), ixRadius: $('#ixRadius'), ixStrength: $('#ixStrength'), ixParallax: $('#ixParallax'),
+      // background
+      bgMode: $('#bgMode'), bgColor: $('#bgColor'), bgUrl: $('#bgUrl'), bgLoadUrl: $('#bgLoadUrl'), bgPickFile: $('#bgPickFile'), bgFile: $('#bgFile'), bgClear: $('#bgClear'), bgLoop: $('#bgLoop'), bgMute: $('#bgMute'),
+      // outs
+      pointsOut: $('#pointsOut'), distOut: $('#distOut'), depthOut: $('#depthOut'), speedOut: $('#speedOut'), jitterOut: $('#jitterOut'), sizeOut: $('#sizeOut'), alphaOut: $('#alphaOut'), faceThreshOut: $('#faceThreshOut'), faceAlphaOut: $('#faceAlphaOut'), dampOut: $('#dampOut'), massOut: $('#massOut'), vmaxOut: $('#vmaxOut'), gravOut: $('#gravOut'), impOut: $('#impOut'), magicOut: $('#magicOut'), ixRadOut: $('#ixRadOut'), ixStrOut: $('#ixStrOut'), ixParOut: $('#ixParOut'),
+      // IO
+      exportBtn: $('#exportJSON'), importBtn: $('#importJSON'), saveBtn: $('#saveJSON'), loadBtn: $('#loadJSON'), fileInput: $('#fileInput'), autoSave: $('#autoSave'),
+      // misc
+      pauseBtn: $('#pauseBtn'), snap: $('#snap'), shuffle: $('#shuffle'), burger: $('#burger'), impulseNow: $('#impulseNow'), clearVel: $('#clearVel'),
+      // reset buttons
+      resetBtns: document.querySelectorAll('[data-reset]'),
+      defaultsBtn: $('#defaults'), randomizeBtn: $('#randomize')
+    };
+
+    const safe = {
+      setValue: (el, v) => { if(el) el.value = v; },
+      setChecked: (el, v) => { if(el) el.checked = !!v; },
+      setText: (el, v) => { if(el) el.textContent = v; },
+      on: (el, ev, fn) => { if(el) el.addEventListener(ev, fn); }
+    };
+
+    // ===== Light tests (keep, add new but не трогаем старые) =====
+    console.assert(stage instanceof HTMLElement && bgLayer instanceof HTMLElement, '#stage/#bgLayer missing');
+    function speedFactor(s){ return clamp01(s/15); }
+    console.assert(speedFactor(0)===0 && speedFactor(15)===1, 'speedFactor bounds');
+    // Extra tests
+    console.assert(parallaxFactor(0)===0 && parallaxFactor(100)>0, 'parallaxFactor');
+    (function(){ const a={x:{y:1}}; const b=deepClone(a); b.x.y=2; console.assert(a.x.y===1,'deepClone immutability'); })();
+
+    // ===== Three Scene =====
+    let renderer, scene, camera, pointsMesh, linesMesh, trisMesh;
+    let positions, velocities; // Float32Array
+    let framePaused = false;
+
+    const raycaster = new THREE.Raycaster();
+    const mouseNdc = new THREE.Vector2();
+    const planeZ0 = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+    const mouseWorld = new THREE.Vector3();
+    let hasMouse = false;
+
+    function initThree(){
+      const w = stage.clientWidth, h = stage.clientHeight;
+      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(w, h, false);
+      stage.appendChild(renderer.domElement);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(55, w/h, 0.1, 2000);
+      camera.position.set(0, 0, 600);
+      scene.fog = new THREE.FogExp2(0x0b0f14, 0.0012);
+
+      createPlexusGeometry();
+      window.addEventListener('resize', onResize);
+      stage.addEventListener('mousemove', onMouseMove);
+      stage.addEventListener('mouseleave', ()=> hasMouse=false);
+      stage.addEventListener('mouseenter', ()=> hasMouse=true);
+      stage.addEventListener('click', ()=> applyImpulseAt(mouseWorld.x, mouseWorld.y));
+      window.addEventListener('keydown', e=>{ if(e.code==='Space'){ e.preventDefault(); framePaused=!framePaused; if(ui.pauseBtn) ui.pauseBtn.textContent = framePaused? 'Resume':'Pause'; } });
+      animate();
+      applyBackground();
+    }
+
+    function onResize(){
+      const w = stage.clientWidth, h = stage.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+
+    function onMouseMove(e){
+      const rect = stage.getBoundingClientRect();
+      mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouseNdc, camera);
+      raycaster.ray.intersectPlane(planeZ0, mouseWorld);
+      hasMouse = true;
+    }
+
+    function randRange(a,b){ return a + Math.random()*(b-a); }
+
+    function createPlexusGeometry(){
+      if(pointsMesh){ scene.remove(pointsMesh); pointsMesh.geometry.dispose(); pointsMesh.material.dispose(); }
+      if(linesMesh){ scene.remove(linesMesh); linesMesh.geometry.dispose(); linesMesh.material.dispose(); }
+      if(trisMesh){ scene.remove(trisMesh); trisMesh.geometry.dispose(); trisMesh.material.dispose(); }
+
+      const N = state.general.points|0;
+      const depth = state.general.depth;
+
+      positions = new Float32Array(N*3);
+      velocities = new Float32Array(N*3);
+
+      const spread = 340;
+      for(let i=0;i<N;i++){
+        const ix = i*3;
+        positions[ix]   = randRange(-spread, spread);
+        positions[ix+1] = randRange(-spread, spread);
+        positions[ix+2] = randRange(-depth/2, depth/2);
+        velocities[ix]   = randRange(-0.25,0.25);
+        velocities[ix+1] = randRange(-0.25,0.25);
+        velocities[ix+2] = randRange(-0.25,0.25);
+      }
+
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const pMat = new THREE.PointsMaterial({ size: state.appearance.pointSize, sizeAttenuation:true, color:0xffffff, transparent:true, opacity:0.9 });
+      pointsMesh = new THREE.Points(geom, pMat);
+      scene.add(pointsMesh);
+
+      const maxSegments = N * 12;
+      const linePositions = new Float32Array(maxSegments * 6);
+      const lineColors    = new Float32Array(maxSegments * 6);
+      const lGeom = new THREE.BufferGeometry();
+      lGeom.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
+      lGeom.setAttribute('color',    new THREE.BufferAttribute(lineColors, 3).setUsage(THREE.DynamicDrawUsage));
+      const lMat  = new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:1.0, blending: THREE.AdditiveBlending });
+      linesMesh = new THREE.LineSegments(lGeom, lMat);
+      linesMesh.userData = { linePositions, lineColors };
+      scene.add(linesMesh);
+
+      const maxTris = Math.max(1, Math.floor(N * 8));
+      const triPositions = new Float32Array(maxTris * 9);
+      const triColors    = new Float32Array(maxTris * 9);
+      const tGeom = new THREE.BufferGeometry();
+      tGeom.setAttribute('position', new THREE.BufferAttribute(triPositions, 3).setUsage(THREE.DynamicDrawUsage));
+      tGeom.setAttribute('color',    new THREE.BufferAttribute(triColors, 3).setUsage(THREE.DynamicDrawUsage));
+      const tMat  = new THREE.MeshBasicMaterial({ vertexColors:true, transparent:true, opacity:1.0, side:THREE.DoubleSide, depthWrite:false, blending:THREE.AdditiveBlending });
+      trisMesh = new THREE.Mesh(tGeom, tMat);
+      trisMesh.userData = { triPositions, triColors };
+      scene.add(trisMesh);
+    }
+
+    function hexToRgb(hex){ const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return m? [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)] : [255,255,255]; }
+    function lerp(a,b,t){ return a + (b-a)*t }
+
+    function updateLines(){
+      const maxDist = state.general.maxDist;
+      const near = hexToRgb(state.appearance.nearColor);
+      const far  = hexToRgb(state.appearance.farColor);
+      const alphaMin = state.appearance.edgeAlpha / 100;
+      const N = state.general.points|0;
+      const lp = linesMesh.userData.linePositions;
+      const lc = linesMesh.userData.lineColors;
+      let segCount = 0;
+      for(let i=0;i<N;i++){
+        const ix = i*3; const ax=positions[ix], ay=positions[ix+1], az=positions[ix+2];
+        for(let j=i+1;j<N;j++){
+          const jx=j*3; const bx=positions[jx], by=positions[jx+1], bz=positions[jx+2];
+          const dx=ax-bx, dy=ay-by, dz=az-bz; const d=Math.hypot(dx,dy,dz);
+          if(d<=maxDist){
+            const t=d/maxDist; const r=Math.floor(lerp(near[0],far[0],t)); const g=Math.floor(lerp(near[1],far[1],t)); const b=Math.floor(lerp(near[2],far[2],t)); const a=Math.max(1.0-t,alphaMin);
+            const p=segCount*6; if(p+5>=lp.length) break;
+            lp[p]=ax; lp[p+1]=ay; lp[p+2]=az; lp[p+3]=bx; lp[p+4]=by; lp[p+5]=bz;
+            lc[p]=r/255*a; lc[p+1]=g/255*a; lc[p+2]=b/255*a; lc[p+3]=r/255*a; lc[p+4]=g/255*a; lc[p+5]=b/255*a;
+            segCount++;
+          }
+        }
+      }
+      const g=linesMesh.geometry; g.setDrawRange(0, segCount*2); g.attributes.position.needsUpdate=true; g.attributes.color.needsUpdate=true;
+    }
+
+    function updateTriangles(){
+      if(!state.appearance.glassOn){ trisMesh.visible=false; return; }
+      trisMesh.visible=true;
+      const thr = state.appearance.faceThreshold; const alphaBase = state.appearance.faceAlpha/100;
+      const N = state.general.points|0; const tp = trisMesh.userData.triPositions; const tc = trisMesh.userData.triColors; let triCount=0;
+      for(let i=0;i<N;i++){
+        const ix=i*3; const ax=positions[ix], ay=positions[ix+1], az=positions[ix+2];
+        const neigh=[]; for(let j=i+1;j<N;j++){ const jx=j*3; const d=Math.hypot(ax-positions[jx], ay-positions[jx+1], az-positions[jx+2]); if(d<=thr) neigh.push(j); if(neigh.length>6) break; }
+        for(let a=0;a<neigh.length;a++){
+          for(let b=a+1;b<neigh.length;b++){
+            const j=neigh[a], k=neigh[b]; const jx=j*3, kx=k*3;
+            const d_ij=Math.hypot(positions[ix]-positions[jx], positions[ix+1]-positions[jx+1], positions[ix+2]-positions[jx+2]);
+            const d_ik=Math.hypot(positions[ix]-positions[kx], positions[ix+1]-positions[kx+1], positions[ix+2]-positions[kx+2]);
+            const d_jk=Math.hypot(positions[jx]-positions[kx], positions[jx+1]-positions[kx+1], positions[jx+2]-positions[kx+2]);
+            if(d_ij>thr||d_ik>thr||d_jk>thr) continue;
+            const abx=positions[jx]-positions[ix], aby=positions[jx+1]-positions[ix+1], abz=positions[jx+2]-positions[ix+2];
+            const acx=positions[kx]-positions[ix], acy=positions[kx+1]-positions[ix+1], acz=positions[kx+2]-positions[ix+2];
+            const cx=aby*acz-abz*acy, cy=abz*acx-abx*acz, cz=abx*acy-aby*acx; const area=Math.hypot(cx,cy,cz)*0.5; if(area<50||area>6000) continue;
+            const p=triCount*9; if(p+8>=tp.length) break;
+            tp[p]=ax; tp[p+1]=ay; tp[p+2]=az; tp[p+3]=positions[jx]; tp[p+4]=positions[jx+1]; tp[p+5]=positions[jx+2]; tp[p+6]=positions[kx]; tp[p+7]=positions[kx+1]; tp[p+8]=positions[kx+2];
+            const avg=(d_ij+d_ik+d_jk)/(3*thr); const aAlpha=Math.max(alphaBase*(1-avg),0.02); for(let t=0;t<9;t+=3){ tc[p+t]=0.85*aAlpha; tc[p+t+1]=0.9*aAlpha; tc[p+t+2]=1.0*aAlpha; }
+            triCount++;
+          }
+        }
+      }
+      const g=trisMesh.geometry; g.setDrawRange(0, triCount*3); g.attributes.position.needsUpdate=true; g.attributes.color.needsUpdate=true;
+    }
+
+    function applyCameraParallax(){ if(!hasMouse) return; const pf = parallaxFactor(state.interact.parallax); const targetX = mouseNdc.x * 400 * pf; const targetY = -mouseNdc.y * 280 * pf; const t = clamp(state.interact.camLerp, 0.01, 0.6); camera.position.x += (targetX - camera.position.x) * t; camera.position.y += (targetY - camera.position.y) * t; }
+    function parallaxFactor(p){ if(p<=0) return 0; const n=p/100; return 0.08 + 0.42*Math.pow(n,0.6); }
+
+    function applyMousePhysics(dtScaled){ if(!hasMouse) return; const r=state.interact.radius, r2=r*r; const strength=state.interact.strength; const sign=(state.interact.physMode==='repel')?-1:1; const invMass = 1/Math.max(0.1,state.physics.mass); const N = state.general.points|0; for(let i=0;i<N;i++){ const ix=i*3; const dx=mouseWorld.x-positions[ix], dy=mouseWorld.y-positions[ix+1], dz=0-positions[ix+2]; const d2=dx*dx+dy*dy+dz*dz; if(d2>=r2) continue; const d=Math.sqrt(d2)+1e-3; const fall = 1 - (d/r); const accel = (strength/900) * dtScaled * fall * invMass; velocities[ix] += (dx/d) * accel * sign; velocities[ix+1] += (dy/d) * accel * sign; velocities[ix+2] += (dz/d) * accel * sign * 0.5; } }
+
+    function applyImpulseAt(x,y){ const r = Math.max(20, state.interact.radius*0.7); const r2=r*r; const s=state.physics.impulse; const invMass = 1/Math.max(0.1,state.physics.mass); const N = state.general.points|0; for(let i=0;i<N;i++){ const ix=i*3; const dx=x-positions[ix], dy=y-positions[ix+1], dz=0-positions[ix+2]; const d2=dx*dx+dy*dy+dz*dz; if(d2>=r2) continue; const d=Math.sqrt(d2)+1e-3; const k=(s/600)* (1 - d/r) * invMass; velocities[ix]   += (dx/d)*k; velocities[ix+1] += (dy/d)*k; velocities[ix+2] += (dz/d)*k*0.5; } }
+
+    function applyMagicField(dtScaled){ const m = state.physics.magic/100; if(m<=0) return; const N = state.general.points|0; const swirl = 0.15*m; for(let i=0;i<N;i++){ const ix=i*3; const x=positions[ix], y=positions[ix+1]; const r=Math.max(10, Math.hypot(x,y)); const fx = (-y/r) * swirl; const fy = (x/r) * swirl; velocities[ix] += fx*dtScaled; velocities[ix+1] += fy*dtScaled; } }
+
+    function clampVelocity(i){ const vmax = state.physics.vmax/100; const ix=i*3; const vx=velocities[ix], vy=velocities[ix+1], vz=velocities[ix+2]; const v = Math.hypot(vx,vy,vz); const cap = Math.max(0.2, vmax); if(v>cap){ const s = cap / v; velocities[ix]*=s; velocities[ix+1]*=s; velocities[ix+2]*=s; } }
+
+    function updatePoints(dt){
+      const N = state.general.points|0; const depth=state.general.depth; const half=depth/2; const jit=state.motion.jitter/1000; const spread=360;
+      const spd = speedFactor(state.motion.speed); // 0..1
+      const dtScaled = dt / 16.6667; // ~60fps
+      const damping = clamp(state.physics.damping, 0.9, 0.999);
+
+      if(state.interact.enabled && state.interact.mouseMode === 'camera') applyCameraParallax();
+
+      // base physics
+      for(let i=0;i<N;i++){
+        const ix=i*3;
+        velocities[ix]   = (velocities[ix]   + (Math.random()-.5)*jit) * damping;
+        velocities[ix+1] = (velocities[ix+1] + (Math.random()-.5)*jit) * damping;
+        velocities[ix+2] = (velocities[ix+2] + (Math.random()-.5)*jit) * damping;
+        velocities[ix+1] += (state.physics.gravity/1200) * dtScaled; // gravity Y
+      }
+
+      if(state.interact.enabled && state.interact.mouseMode === 'physics') applyMousePhysics(dtScaled);
+      applyMagicField(dtScaled);
+
+      // integrate + bounds + clamp
+      for(let i=0;i<N;i++){
+        const ix=i*3;
+        positions[ix]   += velocities[ix]   * spd * dtScaled;
+        positions[ix+1] += velocities[ix+1] * spd * dtScaled;
+        positions[ix+2] += velocities[ix+2] * spd * dtScaled;
+        if(positions[ix] > spread || positions[ix] < -spread) velocities[ix] *= -1;
+        if(positions[ix+1] > spread || positions[ix+1] < -spread) velocities[ix+1] *= -1;
+        const half = depth/2; if(positions[ix+2] > half || positions[ix+2] < -half) velocities[ix+2] *= -1;
+        clampVelocity(i);
+      }
+      pointsMesh.geometry.attributes.position.needsUpdate = true;
+      pointsMesh.material.size = state.appearance.pointSize;
+    }
+
+    // ===== Animation loop =====
+    let last = performance.now();
+    function animate(){ if(!renderer) return; requestAnimationFrame(animate); const now=performance.now(); const dt = Math.min(40, now-last); last=now; if(framePaused) return; updatePoints(dt); updateLines(); updateTriangles(); renderer.render(scene, camera); }
+
+    // ===== Background handling =====
+    function clearBgLayer(){ bgLayer.style.backgroundImage=''; bgLayer.style.backgroundColor='transparent'; bgLayer.innerHTML=''; }
+    function applyBackground(){ clearBgLayer(); const bg=state.background; if(bg.mode==='color'){ bgLayer.style.backgroundColor = bg.color || '#000'; } else if(bg.mode==='image'){ if(bg.url){ bgLayer.style.backgroundImage = `url(${bg.url})`; } } else if(bg.mode==='video'){ if(bg.url){ const v=document.createElement('video'); v.src = bg.url; v.autoplay=true; v.loop=!!bg.loop; v.muted=!!bg.mute; v.playsInline=true; v.oncanplay=()=>v.play().catch(()=>{}); bgLayer.appendChild(v); } } }
+
+    // ===== UI & State sync =====
+
+    function populatePresetOptions(){
+      if(!ui.presetSelect) return;
+      const current = state.misc.preset || 'Default';
+      const custom = loadCustomPresets();
+      const hasCurrent = (
+        current === 'Default' ||
+        PRESETS.some(p => p.name === current) ||
+        custom.some(p => p.name === current)
+      );
+      const targetValue = hasCurrent ? current : 'Default';
+      ui.presetSelect.innerHTML = '';
+      const base = document.createElement('option');
+      base.value = 'Default';
+      base.textContent = 'Default';
+      ui.presetSelect.appendChild(base);
+      PRESETS.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.name;
+        o.textContent = p.name;
+        ui.presetSelect.appendChild(o);
+      });
+      custom.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.name;
+        o.textContent = '* ' + p.name;
+        ui.presetSelect.appendChild(o);
+      });
+      ui.presetSelect.value = targetValue;
+      if(ui.presetSelect.value !== targetValue){
+        ui.presetSelect.value = 'Default';
+      }
+    }
+
+    function applyUI(){
+      populatePresetOptions();
+      // general
+      safe.setValue(ui.points, state.general.points);
+      safe.setText(ui.pointsOut, `(${state.general.points})`);
+      safe.setValue(ui.maxDist, state.general.maxDist);
+      safe.setText(ui.distOut, `(${state.general.maxDist})`);
+      safe.setValue(ui.depth, state.general.depth);
+      safe.setText(ui.depthOut, `(${state.general.depth})`);
+      // motion
+      safe.setValue(ui.speed, state.motion.speed);
+      safe.setText(ui.speedOut, `(${state.motion.speed})`);
+      safe.setValue(ui.jitter, state.motion.jitter);
+      safe.setText(ui.jitterOut, `(${state.motion.jitter})`);
+      // physics
+      const dampSlide = Math.round(clamp01(state.physics.damping) * 1000);
+      safe.setValue(ui.damping, dampSlide);
+      safe.setText(ui.dampOut, `(${state.physics.damping.toFixed(3)})`);
+      safe.setValue(ui.mass, Math.round(state.physics.mass * 100));
+      safe.setText(ui.massOut, `(${state.physics.mass.toFixed(2)})`);
+      safe.setValue(ui.vmax, state.physics.vmax);
+      safe.setText(ui.vmaxOut, `(${state.physics.vmax})`);
+      safe.setValue(ui.gravity, state.physics.gravity);
+      safe.setText(ui.gravOut, `(${state.physics.gravity})`);
+      safe.setValue(ui.impulse, state.physics.impulse);
+      safe.setText(ui.impOut, `(${state.physics.impulse})`);
+      safe.setValue(ui.magic, state.physics.magic);
+      safe.setText(ui.magicOut, `(${state.physics.magic})`);
+      // appearance
+      safe.setValue(ui.pointSize, state.appearance.pointSize);
+      safe.setText(ui.sizeOut, `(${state.appearance.pointSize})`);
+      safe.setValue(ui.edgeAlpha, state.appearance.edgeAlpha);
+      safe.setText(ui.alphaOut, `(${state.appearance.edgeAlpha}%)`);
+      safe.setValue(ui.nearColor, state.appearance.nearColor);
+      safe.setValue(ui.farColor, state.appearance.farColor);
+      safe.setChecked(ui.glassOn, !!state.appearance.glassOn);
+      safe.setValue(ui.faceThreshold, state.appearance.faceThreshold);
+      safe.setText(ui.faceThreshOut, `(${state.appearance.faceThreshold})`);
+      safe.setValue(ui.faceAlpha, state.appearance.faceAlpha);
+      safe.setText(ui.faceAlphaOut, `(${state.appearance.faceAlpha}%)`);
+      // interact
+      safe.setChecked(ui.ixEnabled, !!state.interact.enabled);
+      if(ui.ixMouseMode) ui.ixMouseMode.value = state.interact.mouseMode;
+      if(ui.ixPhysMode) ui.ixPhysMode.value = state.interact.physMode;
+      safe.setValue(ui.ixRadius, state.interact.radius);
+      safe.setText(ui.ixRadOut, `(${state.interact.radius})`);
+      safe.setValue(ui.ixStrength, state.interact.strength);
+      safe.setText(ui.ixStrOut, `(${state.interact.strength})`);
+      safe.setValue(ui.ixParallax, state.interact.parallax);
+      if(ui.ixParOut) ui.ixParOut.textContent = `(${state.interact.parallax}%)`;
+      // background
+      if(ui.bgMode) ui.bgMode.value = state.background.mode;
+      safe.setValue(ui.bgColor, state.background.color);
+      safe.setValue(ui.bgUrl, state.background.url || '');
+      safe.setChecked(ui.bgLoop, !!state.background.loop);
+      safe.setChecked(ui.bgMute, !!state.background.mute);
+      // misc / IO
+      safe.setChecked(ui.autoSave, !!state.misc.autoSave);
+    }
+
+    function bindUI(){
+      const handlers = {
+        points: el => { state.general.points = el.value|0; createPlexusGeometry(); triggerSave(); },
+        maxDist: el => { state.general.maxDist = el.value|0; triggerSave(); },
+        depth: el => { state.general.depth = el.value|0; createPlexusGeometry(); triggerSave(); },
+        speed: el => { state.motion.speed = el.value|0; triggerSave(); },
+        jitter: el => { state.motion.jitter = el.value|0; triggerSave(); },
+        damping: el => { state.physics.damping = clamp((el.value|0)/1000, 0.9, 0.999); triggerSave(); },
+        mass: el => { state.physics.mass = clamp((el.value|0)/100, 0.1, 3); triggerSave(); },
+        vmax: el => { state.physics.vmax = el.value|0; triggerSave(); },
+        gravity: el => { state.physics.gravity = el.value|0; triggerSave(); },
+        impulse: el => { state.physics.impulse = el.value|0; triggerSave(); },
+        magic: el => { state.physics.magic = el.value|0; triggerSave(); },
+        pointSize: el => { state.appearance.pointSize = el.value|0; triggerSave(); },
+        edgeAlpha: el => { state.appearance.edgeAlpha = el.value|0; triggerSave(); },
+        nearColor: el => { state.appearance.nearColor = el.value; triggerSave(); },
+        farColor: el => { state.appearance.farColor = el.value; triggerSave(); },
+        glassOn: el => { state.appearance.glassOn = !!el.checked; triggerSave(); },
+        faceThreshold: el => { state.appearance.faceThreshold = el.value|0; triggerSave(); },
+        faceAlpha: el => { state.appearance.faceAlpha = el.value|0; triggerSave(); },
+        ixEnabled: el => { state.interact.enabled = !!el.checked; triggerSave(); },
+        ixMouseMode: el => { state.interact.mouseMode = el.value || 'camera'; triggerSave(); },
+        ixPhysMode: el => { state.interact.physMode = el.value || 'repel'; triggerSave(); },
+        ixRadius: el => { state.interact.radius = el.value|0; triggerSave(); },
+        ixStrength: el => { state.interact.strength = el.value|0; triggerSave(); },
+        ixParallax: el => { state.interact.parallax = el.value|0; triggerSave(); },
+        bgMode: el => { state.background.mode = el.value || 'color'; applyBackground(); triggerSave(); },
+        bgColor: el => { state.background.color = el.value; applyBackground(); triggerSave(); },
+        bgUrl: el => { state.background.url = el.value.trim(); triggerSave(); },
+        bgLoop: el => { state.background.loop = !!el.checked; applyBackground(); triggerSave(); },
+        bgMute: el => { state.background.mute = !!el.checked; applyBackground(); triggerSave(); },
+        autoSave: el => {
+          state.misc.autoSave = !!el.checked;
+          if(state.misc.autoSave){
+            saveState();
+          } else {
+            clearPendingSave();
+          }
+        }
+      };
+
+      Object.keys(handlers).forEach(key => {
+        const el = ui[key];
+        if(!el) return;
+        const ev = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
+        el.addEventListener(ev, () => {
+          handlers[key](el);
+          applyUI();
+        });
+      });
+
+      safe.on(ui.presetSelect, 'change', () => {
+        state.misc.preset = ui.presetSelect?.value || 'Default';
+      });
+      safe.on(ui.applyPreset, 'click', () => {
+        const name = ui.presetSelect?.value || 'Default';
+        applyPresetByName(name);
+      });
+      safe.on(ui.saveAsCustom, 'click', () => {
+        saveCurrentAsCustom();
+      });
+
+      safe.on(ui.defaultsBtn, 'click', () => {
+        applyPresetByName('Default');
+      });
+      safe.on(ui.randomizeBtn, 'click', () => {
+        randomizeState();
+        createPlexusGeometry();
+        applyBackground();
+        applyUI();
+        triggerSave();
+      });
+      safe.on(ui.pauseBtn, 'click', () => {
+        framePaused = !framePaused;
+        if(ui.pauseBtn) ui.pauseBtn.textContent = framePaused ? 'Resume' : 'Pause';
+      });
+
+      safe.on(ui.snap, 'click', () => {
+        gsap.to(camera.position, { z: 380, duration: 0.6, ease: 'power2.out' });
+      });
+      safe.on(ui.shuffle, 'click', () => {
+        gsap.to(camera.position, { z: 700, duration: 0.6, ease: 'power2.out' });
+      });
+      safe.on(ui.burger, 'click', () => {
+        sidebar?.classList.toggle('open');
+      });
+      safe.on(ui.impulseNow, 'click', () => {
+        applyImpulseAt(mouseWorld.x || 0, mouseWorld.y || 0);
+      });
+      safe.on(ui.clearVel, 'click', () => {
+        if(velocities) velocities.fill(0);
+      });
+
+      ui.resetBtns?.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sec = btn.getAttribute('data-reset');
+          if(!sec || !DEFAULTS[sec] || !state[sec]) return;
+          mergeDeep(state[sec], deepClone(DEFAULTS[sec]));
+          if(sec === 'general' || sec === 'appearance'){
+            createPlexusGeometry();
+          }
+          if(sec === 'background'){
+            applyBackground();
+          }
+          applyUI();
+          triggerSave();
+        });
+      });
+
+      safe.on(ui.bgLoadUrl, 'click', () => {
+        const url = ui.bgUrl?.value?.trim();
+        if(!url) return;
+        state.background.url = url;
+        applyBackground();
+        triggerSave();
+      });
+      safe.on(ui.bgPickFile, 'click', () => {
+        ui.bgFile?.click();
+      });
+      safe.on(ui.bgFile, 'change', async event => {
+        const file = event.target?.files?.[0];
+        if(file){
+          await handleBgFile(file);
+        }
+        if(event.target) event.target.value = '';
+      });
+      safe.on(ui.bgClear, 'click', () => {
+        clearUserBackground();
+        applyUI();
+        triggerSave();
+      });
+
+      safe.on(ui.exportBtn, 'click', () => {
+        const payload = snapshotPersistableState();
+        downloadText('plexus-settings.json', JSON.stringify(payload, null, 2));
+      });
+      safe.on(ui.importBtn, 'click', () => {
+        ui.fileInput?.click();
+      });
+      safe.on(ui.fileInput, 'change', async event => {
+        const file = event.target?.files?.[0];
+        if(file){
+          await handleImportFile(file);
+        }
+        if(event.target) event.target.value = '';
+      });
+      safe.on(ui.saveBtn, 'click', () => {
+        saveState(true);
+      });
+      safe.on(ui.loadBtn, 'click', () => {
+        if(loadState()){
+          createPlexusGeometry();
+          applyBackground();
+          applyUI();
+        }
+      });
+    }
+
+    let saveTimer = null;
+    let lastBgObjectUrl = null;
+
+    function snapshotConfig(){
+      return {
+        general: deepClone(state.general),
+        motion: deepClone(state.motion),
+        physics: deepClone(state.physics),
+        appearance: deepClone(state.appearance),
+        interact: deepClone(state.interact),
+        background: deepClone(state.background)
+      };
+    }
+
+    function snapshotPersistableState(){
+      const shot = snapshotConfig();
+      shot.misc = deepClone(state.misc);
+      if(shot.background && typeof shot.background.url === 'string' && shot.background.url.startsWith('blob:')){
+        shot.background.url = '';
+      }
+      return shot;
+    }
+
+    function randomColor(){
+      return `#${Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0')}`;
+    }
+
+    function randomizeState(){
+      state.general.points = Math.floor(Math.random()*360)+80;
+      state.general.maxDist = Math.floor(Math.random()*180)+60;
+      state.general.depth = Math.floor(Math.random()*700)+200;
+      state.motion.speed = Math.floor(Math.random()*11)+3;
+      state.motion.jitter = Math.floor(Math.random()*120);
+      state.physics.damping = clamp(0.990 + Math.random()*0.009, 0.9, 0.999);
+      state.physics.mass = clamp(0.7 + Math.random()*1.2, 0.1, 3);
+      state.physics.vmax = Math.floor(Math.random()*240)+120;
+      state.physics.gravity = Math.floor(Math.random()*30) - 10;
+      state.physics.impulse = Math.floor(Math.random()*260)+80;
+      state.physics.magic = Math.floor(Math.random()*70);
+      state.appearance.pointSize = Math.floor(Math.random()*4)+1;
+      state.appearance.edgeAlpha = Math.floor(Math.random()*40)+10;
+      state.appearance.nearColor = randomColor();
+      state.appearance.farColor = randomColor();
+      state.appearance.glassOn = Math.random() > 0.4;
+      state.appearance.faceThreshold = Math.floor(Math.random()*120)+60;
+      state.appearance.faceAlpha = Math.floor(Math.random()*40)+5;
+      state.interact.radius = Math.floor(Math.random()*220)+80;
+      state.interact.strength = Math.floor(Math.random()*180)+20;
+      state.interact.parallax = Math.floor(Math.random()*80);
+      state.background.mode = 'color';
+      state.background.color = randomColor();
+      state.background.url = '';
+      state.misc.preset = 'Randomized';
+    }
+
+    function applyState(next){
+      if(!next || typeof next !== 'object') return;
+      const sections = ['general','motion','physics','appearance','interact','background','misc'];
+      sections.forEach(key => {
+        if(!Object.prototype.hasOwnProperty.call(next, key)) return;
+        if(!state[key] || typeof state[key] !== 'object') state[key] = {};
+        mergeDeep(state[key], next[key]);
+      });
+    }
+
+    function saveCurrentAsCustom(){
+      const name = (prompt('Название пресета?', state.misc.preset || 'Custom') || '').trim();
+      if(!name) return;
+      const data = snapshotConfig();
+      data.name = name;
+      const custom = loadCustomPresets().filter(p => p.name !== name);
+      custom.unshift(data);
+      storeCustomPresets(custom.slice(0, 20));
+      state.misc.preset = name;
+      applyUI();
+      triggerSave();
+    }
+
+    function loadCustomPresets(){
+      try{
+        const raw = localStorage.getItem(CUSTOM_PRESETS_KEY);
+        if(!raw) return [];
+        const parsed = JSON.parse(raw);
+        if(!Array.isArray(parsed)) return [];
+        return parsed.filter(item => item && typeof item === 'object' && typeof item.name === 'string').map(item => ({
+          name: item.name,
+          general: deepClone(item.general || {}),
+          motion: deepClone(item.motion || {}),
+          physics: deepClone(item.physics || {}),
+          appearance: deepClone(item.appearance || {}),
+          interact: deepClone(item.interact || {}),
+          background: deepClone(item.background || {})
+        }));
+      } catch(err){
+        console.warn('loadCustomPresets failed', err);
+        return [];
+      }
+    }
+
+    function storeCustomPresets(list){
+      try{
+        localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(list));
+      } catch(err){
+        console.warn('storeCustomPresets failed', err);
+      }
+    }
+
+    function downloadText(filename, text){
+      try{
+        const blob = new Blob([text], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch(err){
+        console.warn('downloadText failed', err);
+      }
+    }
+
+    function readFileAsText(file){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error || new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+    }
+
+    async function handleImportFile(file){
+      try{
+        const text = await readFileAsText(file);
+        const data = JSON.parse(text);
+        applyState(data);
+        state.misc.preset = (data && data.misc && data.misc.preset) ? data.misc.preset : 'Imported';
+        createPlexusGeometry();
+        applyBackground();
+        applyUI();
+        triggerSave();
+      } catch(err){
+        console.error('Import failed', err);
+        alert('Failed to import settings. Check console for details.');
+      }
+    }
+
+    async function handleBgFile(file){
+      if(!file) return;
+      if(lastBgObjectUrl){
+        URL.revokeObjectURL(lastBgObjectUrl);
+        lastBgObjectUrl = null;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      lastBgObjectUrl = objectUrl;
+      state.background.url = objectUrl;
+      if(file.type && file.type.startsWith('video/')){
+        state.background.mode = 'video';
+        state.background.loop = true;
+        state.background.mute = true;
+      } else {
+        state.background.mode = 'image';
+      }
+      applyBackground();
+      applyUI();
+      triggerSave();
+    }
+
+    function clearUserBackground(){
+      if(lastBgObjectUrl){
+        URL.revokeObjectURL(lastBgObjectUrl);
+        lastBgObjectUrl = null;
+      }
+      state.background.url = '';
+      state.background.mode = 'color';
+      applyBackground();
+    }
+
+    function saveState(manual = false){
+      try{
+        const payload = JSON.stringify(snapshotPersistableState());
+        localStorage.setItem(STORAGE_KEY, payload);
+        if(manual) console.info('Plexus state saved');
+      } catch(err){
+        console.warn('saveState failed', err);
+      }
+    }
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return false;
+        const data = JSON.parse(raw);
+        applyState(data);
+        if(data && data.misc && data.misc.preset){
+          state.misc.preset = data.misc.preset;
+        }
+        return true;
+      } catch(err){
+        console.warn('loadState failed', err);
+        return false;
+      }
+    }
+
+    function triggerSave(){
+      if(!state.misc.autoSave) return;
+      if(saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        saveTimer = null;
+        saveState();
+      }, 350);
+    }
+
+    function clearPendingSave(){
+      if(saveTimer){
+        clearTimeout(saveTimer);
+        saveTimer = null;
+      }
+    }
+
+    function applyPresetByName(name){
+      if(!name) return false;
+      if(name === 'Default'){
+        applyState(deepClone(DEFAULTS));
+        state.misc.preset = 'Default';
+      } else {
+        const preset = PRESETS.find(p => p.name === name) || loadCustomPresets().find(p => p.name === name);
+        if(!preset){
+          console.warn('Preset not found:', name);
+          return false;
+        }
+        const data = deepClone(preset);
+        delete data.name;
+        applyState(data);
+        state.misc.preset = name;
+      }
+      createPlexusGeometry();
+      applyBackground();
+      applyUI();
+      triggerSave();
+      return true;
+    }
+
+    function mergeDeep(target, source){
+      if(!source || typeof source !== 'object') return target;
+      Object.keys(source).forEach(key => {
+        const src = source[key];
+        if(src && typeof src === 'object' && !Array.isArray(src)){
+          if(!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])){
+            target[key] = {};
+          }
+          mergeDeep(target[key], src);
+        } else if(src !== undefined){
+          target[key] = Array.isArray(src) ? src.slice() : src;
+        }
+      });
+      return target;
+    }
+
+    function deepClone(obj){
+      if(typeof structuredClone === 'function'){
+        try { return structuredClone(obj); } catch(err) { /* ignore */ }
+      }
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function clamp(value, min, max){
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function clamp01(value){
+      return clamp(value, 0, 1);
+    }
+
+    function boot(){
+      loadState();
+      applyUI();
+      bindUI();
+      initThree();
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if(state.misc.autoSave){
+        saveState();
+      }
+    });
+
+    try {
+      boot();
+    } catch (err){
+      console.error('BOOT FAILED:', err);
+    }
+  });
+  </script>
+</body>
+</html>
